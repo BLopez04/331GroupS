@@ -20,22 +20,42 @@ Extreme poverty rate ($2.15/day, Gapminder data) long series 1800 to 2100
 
 ```{r}
 
-poverty <- read.csv("./Data/gm_epov_rate.csv")
+poverty_unclean <- read.csv("./Data/gm_epov_rate.csv")
 
 ```
 
 Life expectancy (The number of years a newborn infant would live if the current mortality rates at different ages were to stay the same throughout its life.)
 ```{r}
 
-expectancy <- read.csv("./Data/lex.csv")
+expectancy_unclean <- read.csv("./Data/lex.csv")
 
 ```
 
 
-Data cleaning
+Data Cleaning
 ```{r}
 
+poverty <- poverty_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  filter(!is.na(poverty_rate)) |> # Gets rid of rows with no data
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")),
+         poverty_rate = poverty_rate/100) 
 
+expectancy <- expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  filter(!is.na(life_expectancy) & life_expectancy > 0) |> # Get rid of rows with no data (and 0 seems extreme)
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")))
+```
+
+Data Joining
+```{r}
+combined <- poverty |>
+  full_join(expectancy, join_by(country == country, year == year)) |>
+  drop_na()
 
 ```
 ## Written Analysis
