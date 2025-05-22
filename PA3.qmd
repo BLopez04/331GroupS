@@ -16,21 +16,28 @@ library(gt)
 
 Two datasets:
 
-Poverty rate (\$3.65/day, Gapminder data) long series 1800 to 2100
+Extreme poverty rate ($2.15/day, Gapminder data) long series 1800 to 2100
 
 ```{r}
 
-poverty <- read.csv("./Data/gm_365pov_rate.csv")
+poverty <- read.csv("./Data/gm_epov_rate.csv")
 
 ```
 
-
+Life expectancy (The number of years a newborn infant would live if the current mortality rates at different ages were to stay the same throughout its life.)
 ```{r}
 
 expectancy <- read.csv("./Data/lex.csv")
 
 ```
 
+
+Data cleaning
+```{r}
+
+
+
+```
 ## Written Analysis
 
 
