@@ -1,0 +1,36 @@
+---
+title: "PA3"
+author: "Bernardo Lopez, Victor Zahn, Gregory Morita, Jonathan Garcia"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gt)
+```
+
+## Dataset
+
+Two datasets:
+
+Poverty rate (\$3.65/day, Gapminder data) long series 1800 to 2100
+
+```{r}
+
+poverty <- read.csv("./Data/gm_365pov_rate.csv")
+
+```
+
+
+```{r}
+
+expectancy <- read.csv("./Data/lex.csv")
+
+```
+
+## Written Analysis
+
+
