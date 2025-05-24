@@ -41,15 +41,15 @@ poverty <- poverty_unclean |>
                names_to = "year",
                values_to = "poverty_rate") |>
   filter(!is.na(poverty_rate)) |> # Gets rid of rows with no data
-  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")),
-         poverty_rate = poverty_rate/100) 
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")), # Extract years
+         poverty_rate = poverty_rate/100) # Convert rates to range 0-1
 
 expectancy <- expectancy_unclean |>
   pivot_longer(cols = "X1800":"X2100",
                names_to = "year",
                values_to = "life_expectancy") |>
   filter(!is.na(life_expectancy) & life_expectancy > 0) |> # Get rid of rows with no data (and 0 seems extreme)
-  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")))
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}"))) # Extract years
 ```
 
 Data Joining
