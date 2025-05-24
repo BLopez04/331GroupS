@@ -67,6 +67,8 @@ combined <- poverty |>
 
 Global modernization and advances in healthcare have contributed to increases in life expectancy in the modern era. These benefits are often unevenly distributed and tend to be concentrated among populations with higher socioeconomic status(Liu et al., 2024). In this study, we will analyze historical poverty rates and life expectancy data to examine if extreme poverty rates have a linear negative relationship with life expectancy rates.
 
+The data cleaning should have little impact on observations, though it does include removing any NA values, which may obscure the overall picture for any one nation. Missing values are typically in large chunks, and shouldn't impact trends in nations that do have data.
+
 **References**
 
 Lili Liu et al. (2024), Impacts of Poverty and Lifestyles on Mortality: A cohort Study in Predominantly Low-Income Americans, American Journal of Preventive Medicine.67(1)15-23.
