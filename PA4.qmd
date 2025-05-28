@@ -46,7 +46,6 @@ combined <- poverty |>
   full_join(expectancy, join_by(country == country, year == year)) |>
   drop_na()
 
-head(combined) |> kable()
 ```
 
 The dataset covers the extreme poverty rate (<$2.15/day,) as well as the life expectancy at birth from 1800 to 2100 (by Gapminder).
@@ -58,5 +57,9 @@ Each row is a country/year combination, and rows are filtered out if there is no
 
 ## Linear Regression 
 
+```{r}
+
+
+```
 
 ## Model Fit
