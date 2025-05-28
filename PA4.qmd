@@ -1,0 +1,62 @@
+---
+title: "PA3"
+author: "Bernardo Lopez, Victor Zahn, Gregory Morita, Jonathan Garcia"
+format: html
+editor: visual
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gt)
+```
+
+## Dataset
+
+```{r}
+#| code-fold: true
+poverty_unclean <- read.csv("./Data/gm_epov_rate.csv")
+
+
+expectancy_unclean <- read.csv("./Data/lex.csv")
+
+
+poverty <- poverty_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  filter(!is.na(poverty_rate)) |> # Gets rid of rows with no data
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")), # Extract years
+         poverty_rate = poverty_rate/100) # Convert rates to range 0-1
+
+expectancy <- expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  filter(!is.na(life_expectancy) & life_expectancy > 0) |> # Get rid of rows with no data (and 0 seems extreme)
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}"))) # Extract years
+
+combined <- poverty |>
+  full_join(expectancy, join_by(country == country, year == year)) |>
+  drop_na()
+
+head(combined) |> kable()
+```
+
+The dataset covers the extreme poverty rate (<$2.15/day,) as well as the life expectancy at birth from 1800 to 2100 (by Gapminder).
+Each row is a country/year combination, and rows are filtered out if there is no data or a life expectancy of 0. 
+
+
+## Data Visualizations
+
+
+## Linear Regression 
+
+
+## Model Fit
