@@ -1,8 +1,11 @@
 ---
-title: "PA3"
+title: "PA4"
 author: "Bernardo Lopez, Victor Zahn, Gregory Morita, Jonathan Garcia"
 format: html
 editor: visual
+embed-resources: true
+code-tools: true
+code-fold: true
 execute: 
   error: true
   echo: true
@@ -16,17 +19,63 @@ library(knitr)
 library(kableExtra)
 library(gt)
 ```
+## Introduction
 
-## Dataset
+Two datasets:
+
+Extreme poverty rate (\$2.15/day, Gapminder data) long series 1800 to 2100
 
 ```{r}
-#| code-fold: true
 poverty_unclean <- read.csv("./Data/gm_epov_rate.csv")
 
+```
+
+Life expectancy (The number of years a newborn infant would live if the current mortality rates at different ages were to stay the same throughout its life.)
+
+```{r}
 
 expectancy_unclean <- read.csv("./Data/lex.csv")
 
+```
 
+## Data Cleaning
+
+Cleaning the data requires getting rid of country/year pairs with no data in either the poverty rate or life expectancy datasets. This leads to 794 country/year pairs being removed out of 57,792 from the poverty dataset. 
+
+```{r}
+#| output: false
+poverty_unclean |> 
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  str()
+
+poverty_unclean |> 
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  map_int(~ sum(is.na(.x))) |>
+  enframe(name = "var", value = "missing")
+
+```
+The life expectancy dataset ends up with 1,500/58,996 missing country/year pairs with the added condition of having a life expectancy greater than 0 in each data point.
+```{r}
+#| output: false
+expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  str()
+
+  expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  map_int(~ sum(is.na(.x))) |>
+  enframe(name = "var", value = "missing")
+```
+The rest of the data cleaning adapts the sets to be more workable.
+```{r}
 poverty <- poverty_unclean |>
   pivot_longer(cols = "X1800":"X2100",
                names_to = "year",
@@ -42,20 +91,28 @@ expectancy <- expectancy_unclean |>
   filter(!is.na(life_expectancy) & life_expectancy > 0) |> # Get rid of rows with no data (and 0 seems extreme)
   mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}"))) # Extract years
 
+```
+
+Data Joining between the two datasets on country/year pairs with both poverty and life expectancy data.
+
+```{r}
 combined <- poverty |>
   full_join(expectancy, join_by(country == country, year == year)) |>
   drop_na()
 
 ```
 
-The dataset covers the extreme poverty rate (<$2.15/day,) as well as the life expectancy at birth from 1800 to 2100 (by Gapminder).
-Each row is a country/year combination, and rows are filtered out if there is no data or a life expectancy of 0. 
+**Hypothesis**
+
+Global modernization and advances in healthcare have contributed to increases in life expectancy in the modern era. These benefits are often unevenly distributed and tend to be concentrated among populations with higher socioeconomic status(Liu et al., 2024). In this study, we will analyze historical poverty rates and life expectancy data to examine if extreme poverty rates have a linear negative relationship with life expectancy rates.
 
 
-## Data Visualizations
+## Modeling the Relationship between extreme poverty rate and life expectancy at birth
+
+# Data Visualizations
 
 
-## Linear Regression 
+# Linear Regression 
 
 Fit a linear regression model using the average poverty rate and life expectancy for each country across all years in the dataset (1800-2100). Each point is a single country in the scatterplot.
 
@@ -76,4 +133,4 @@ summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
 summary(summarized_lm)
 ```
 
-## Model Fit
+# Model Fit
