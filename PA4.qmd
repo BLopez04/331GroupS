@@ -57,9 +57,23 @@ Each row is a country/year combination, and rows are filtered out if there is no
 
 ## Linear Regression 
 
+Fit a linear regression model using the average poverty rate and life expectancy for each country across all years in the dataset (1800-2100). Each point is a single country in the scatterplot.
+
 ```{r}
 
+summarized <- combined |>
+  group_by(country) |>
+  summarise(
+    avg_poverty_rate = mean(poverty_rate, na.rm = TRUE),
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)) 
 
+summarized |>
+  ggplot(aes(x = avg_poverty_rate, y = avg_life_expectancy)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
+summary(summarized_lm)
 ```
 
 ## Model Fit
