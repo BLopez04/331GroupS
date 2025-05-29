@@ -18,6 +18,7 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(gt)
+library(broom)
 ```
 ## Introduction
 
@@ -130,7 +131,8 @@ summarized |>
   geom_smooth(method = "lm")
 
 summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
-summary(summarized_lm)
+tidy(summarized_lm) |> kable()
+glance(summarized_lm) |> kable()
 ```
 
 # Model Fit
