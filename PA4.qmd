@@ -20,6 +20,7 @@ library(kableExtra)
 library(gt)
 library(broom)
 ```
+
 ## Introduction
 
 Two datasets:
@@ -41,7 +42,7 @@ expectancy_unclean <- read.csv("./Data/lex.csv")
 
 ## Data Cleaning
 
-Cleaning the data requires getting rid of country/year pairs with no data in either the poverty rate or life expectancy datasets. This leads to 794 country/year pairs being removed out of 57,792 from the poverty dataset. 
+Cleaning the data requires getting rid of country/year pairs with no data in either the poverty rate or life expectancy datasets. This leads to 794 country/year pairs being removed out of 57,792 from the poverty dataset.
 
 ```{r}
 #| output: false
@@ -59,7 +60,9 @@ poverty_unclean |>
   enframe(name = "var", value = "missing")
 
 ```
+
 The life expectancy dataset ends up with 1,500/58,996 missing country/year pairs with the added condition of having a life expectancy greater than 0 in each data point.
+
 ```{r}
 #| output: false
 expectancy_unclean |>
@@ -75,7 +78,9 @@ expectancy_unclean |>
   map_int(~ sum(is.na(.x))) |>
   enframe(name = "var", value = "missing")
 ```
+
 The rest of the data cleaning adapts the sets to be more workable.
+
 ```{r}
 poverty <- poverty_unclean |>
   pivot_longer(cols = "X1800":"X2100",
@@ -107,13 +112,11 @@ combined <- poverty |>
 
 Global modernization and advances in healthcare have contributed to increases in life expectancy in the modern era. These benefits are often unevenly distributed and tend to be concentrated among populations with higher socioeconomic status(Liu et al., 2024). In this study, we will analyze historical poverty rates and life expectancy data to examine if extreme poverty rates have a linear negative relationship with life expectancy rates.
 
-
 ## Modeling the Relationship between extreme poverty rate and life expectancy at birth
 
 # Data Visualizations
 
-
-# Linear Regression 
+# Linear Regression
 
 Fit a linear regression model using the average poverty rate and life expectancy for each country across all years in the dataset (1800-2100). Each point is a single country in the scatterplot.
 
