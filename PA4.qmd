@@ -122,7 +122,7 @@ Global modernization and advances in healthcare have contributed to increases in
 
 # Data Visualizations
 
-To explore the relationship between poverty rate and life expectancy, we start with a scatterplot of the average values for each country across all years. We then animate the relationship over time to observe how the connection between the two variables evolves historically.
+To explore the relationship between poverty rate and life expectancy, we start with a scatterplot of the average values for each country across all years. Each point represents a country, with notable outliers labeled. This plot highlights a general trend where countries with higher average poverty rates tend to have lower average life expectancy.The animated plot shows us how this relationship changes over time. We see that across time as poverty rate decreases, life expectency trends towards increasing.
 
 ```{r}
 if (!exists("summarized")) {
