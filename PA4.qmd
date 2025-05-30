@@ -19,6 +19,7 @@ library(knitr)
 library(kableExtra)
 library(gt)
 library(broom)
+library(gtsummary)
 ```
 
 ## Introduction
@@ -116,6 +117,7 @@ Global modernization and advances in healthcare have contributed to increases in
 
 # Data Visualizations
 
+
 # Linear Regression
 
 Fit a linear regression model using the average poverty rate and life expectancy for each country across all years in the dataset (1800-2100). Each point is a single country in the scatterplot.
@@ -133,10 +135,33 @@ summarized |>
   geom_point() +
   geom_smooth(method = "lm")
 
-summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
-tidy(summarized_lm) |> kable()
-glance(summarized_lm) |> kable()
 ```
+
+
+```{r}
+summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
+
+summarized_lm |>
+  tbl_regression(intercept = T) |>
+    kable( 
+        caption = "Coefficient 
+        values returned by the fitted 
+        linear regression model", 
+        col.names = c("Characteristic", 
+                      "Estimated Value", 
+                      "95% Confidence Interval", 
+                      "P Value")) |>
+  kable_styling(full_width = F,
+                html_font = "Cambria", 
+                bootstrap_options = "striped", 
+                position = "center")
+  
+```
+**Interpretation of Returned Coefficient Values**
+The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a person at a 0% poverty rate. The estimated value for the average poverty rate characteristic is the average expected change of life expectancy for every 10% increased poverty rate a person experiences.
+
+Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values being so incredibly low means that the results and relationships shown by the linear model are *very* statistically relevant, meaning that it is reflective of the population and the results are unlikely to be caused by sampling error. Likewise, the 95% confidence interval reported represents that 95% of samples' average values for the given characteristic would lie within the given interval.
+
 
 # Model Fit
 
