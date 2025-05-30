@@ -20,6 +20,11 @@ library(kableExtra)
 library(gt)
 library(broom)
 library(gtsummary)
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+library(gifski)
+
 ```
 
 ## Introduction
@@ -117,6 +122,56 @@ Global modernization and advances in healthcare have contributed to increases in
 
 # Data Visualizations
 
+To explore the relationship between poverty rate and life expectancy, we start with a scatterplot of the average values for each country across all years. We then animate the relationship over time to observe how the connection between the two variables evolves historically.
+
+```{r}
+if (!exists("summarized")) {
+  summarized <- combined |>
+    group_by(country) |>
+    summarise(
+      avg_poverty_rate = mean(poverty_rate, na.rm = TRUE),
+      avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+    )
+}
+top_bottom <- summarized |>
+  arrange(avg_life_expectancy) |>
+  slice(c(1:5, (n() - 4):n()))
+
+ggplot(summarized, aes(x = avg_poverty_rate, y = avg_life_expectancy)) +
+  geom_point(color = "steelblue", alpha = 0.6, size = 2.5) +
+  geom_text(data = top_bottom, aes(label = country), hjust = 1.1, size = 3) +
+  labs(
+    title = "Country-Level Averages: Life Expectancy vs. Poverty Rate",
+    subtitle = "Top and bottom 5 countries by life expectancy labeled",
+    x = "Average Poverty Rate (Proportion)",
+    y = "Average Life Expectancy (Years)"
+  ) +
+  theme_minimal()
+
+
+```
+
+
+
+```{r, eval=interactive()}
+animated_plot <- ggplot(combined, aes(x = poverty_rate, y = life_expectancy)) +
+  geom_point(aes(color = country), alpha = 0.6, show.legend = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(
+    title = "Year: {frame_time}",
+    subtitle = "Tracking poverty vs. life expectancy over time",
+    x = "Poverty Rate (Proportion)",
+    y = "Life Expectancy (Years)"
+  ) +
+  transition_time(year) +
+  ease_aes('linear') +
+  theme_minimal()
+
+animate(animated_plot, renderer = gifski_renderer("poverty_vs_lifeexp.gif"),
+        width = 800, height = 500, fps = 10, duration = 10)
+```
+
+![](poverty_vs_lifeexp.gif)
 
 # Linear Regression
 
@@ -137,7 +192,6 @@ summarized |>
 
 ```
 
-
 ```{r}
 summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
 
@@ -157,11 +211,10 @@ summarized_lm |>
                 position = "center")
   
 ```
-**Interpretation of Returned Coefficient Values**
-The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a person at a 0% poverty rate. The estimated value for the average poverty rate characteristic is the average expected change of life expectancy for every 10% increased poverty rate a person experiences.
+
+**Interpretation of Returned Coefficient Values** The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a person at a 0% poverty rate. The estimated value for the average poverty rate characteristic is the average expected change of life expectancy for every 10% increased poverty rate a person experiences.
 
 Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values being so incredibly low means that the results and relationships shown by the linear model are *very* statistically relevant, meaning that it is reflective of the population and the results are unlikely to be caused by sampling error. Likewise, the 95% confidence interval reported represents that 95% of samples' average values for the given characteristic would lie within the given interval.
-
 
 # Model Fit
 
