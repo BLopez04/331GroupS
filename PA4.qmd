@@ -141,10 +141,12 @@ summarized |>
 ```{r}
 summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
 
+summary(summarized_lm)$coefficients[,4]
+summary(summarized_lm)
+
 summarized_lm |>
   tbl_regression(intercept = T) |>
-    kable( 
-        caption = "Coefficient 
+    kable(caption = "Coefficient 
         values returned by the fitted 
         linear regression model", 
         col.names = c("Characteristic", 
