@@ -195,9 +195,6 @@ summarized |>
 ```{r}
 summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
 
-summary(summarized_lm)$coefficients[,4]
-summary(summarized_lm)
-
 summarized_lm |>
   tbl_regression(intercept = T) |>
     kable(caption = "Coefficient 
@@ -214,9 +211,11 @@ summarized_lm |>
   
 ```
 
-**Interpretation of Returned Coefficient Values** The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a person at a 0% poverty rate. The estimated value for the average poverty rate characteristic is the average expected change of life expectancy for every 10% increased poverty rate a person experiences.
+**Interpretation of Returned Coefficient Values** 
+The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a country with a 0% poverty rate. While the estimated value for the average poverty rate characteristic is the expected average change in life expectancy for every 10% increase of poverty rate a country experiences.
 
-Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values being so incredibly low means that the results and relationships shown by the linear model are *very* statistically relevant, meaning that it is reflective of the population and the results are unlikely to be caused by sampling error. Likewise, the 95% confidence interval reported represents that 95% of samples' average values for the given characteristic would lie within the given interval.
+Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values for both characteristics being so incredibly low means that the results and relationships displayed by the linear model are *very* statistically relevant. This means that the predictions returned by the model are very reflective of the overall population and that the results returned are unlikely to be caused by any sampling errors. Likewise, the 95% confidence interval reported gives us a range in which 95% of samples would have average values for the given characteristics lying within that range.
+
 
 # Model Fit
 
@@ -257,4 +256,4 @@ tibble(
 
 **Interpretation of Model Variability**
 
-The model accounts for 61.88% of variability in average life expectancy for each country across all years in the dataset (1800-2100). This suggest that poverty rate is a strong indicator for life expectancy. The model seems to capture a large amount of variance but other variables or interactions may improve model accuracy. The absence of a p-value means we cannot determine whether the relationship between average life expectancy and poverty rate is statistically significant.
+The model accounts for 61.88% of variability in average life expectancy for each country across all years in the dataset (1800-2100). This suggest that poverty rate is a strong indicator for life expectancy. The model seems to capture a large amount of variance but other variables or interactions may improve model accuracy.
