@@ -1,0 +1,263 @@
+---
+title: "An Analysis on the Impacts of Extreme Poverty Rates on Life Expectancy"
+authors: "Bernardo Lopez, Victor Zahn, Gregory Morita, Jonathan Garcia"
+format: html
+editor: visual
+embed-resources: true
+code-tools: true
+code-fold: true
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gt)
+library(broom)
+library(gtsummary)
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+library(gifski)
+
+```
+
+## Introduction
+
+Life expectancy varies drastically across nations and time. While life expectancy is on the rise, the gap in wealth inequality across nations means life-saving and quality-of-life care are similarly unequal. One way to measure this inequality is in the proportion of a nation's population that lives in the lowest levels of poverty. These populations are likely to lack access to public or private healthcare, which we believe will be a strong contributing factor to their nations' life expectancy.
+
+This report takes a look at the connection between the extent of extreme poverty in 190+ nations and their respective life expectancy, The report covers 300 years of data from 1800 to independently projected values up to the year 2100. The condition for falling under "Extreme poverty" is for populations with income \<\$2.15 a day (inflation adjusted).
+
+All data comes from two independent datasets (courtesy of Gapminder) that will be cleaned and joined together for analysis.
+
+The first dataset is the "Extreme poverty rate (\<\$2.15/day, Gapminder data) long series 1800 to 2100".
+
+```{r}
+poverty_unclean <- read.csv("./Data/gm_epov_rate.csv")
+
+```
+
+The second is the "Life expectancy (The number of years a newborn infant would live if the current mortality rates at different ages were to stay the same throughout its life.)"
+
+```{r}
+
+expectancy_unclean <- read.csv("./Data/lex.csv")
+
+```
+
+## Data Cleaning
+
+Cleaning the data requires getting rid of country/year pairs with no data in either the poverty rate or life expectancy datasets. This leads to 794 country/year pairs being removed out of 57,792 from the poverty dataset.
+
+```{r}
+#| output: false
+poverty_unclean |> 
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  str()
+
+poverty_unclean |> 
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  map_int(~ sum(is.na(.x))) |>
+  enframe(name = "var", value = "missing")
+
+```
+
+The life expectancy dataset ends up with 1,500/58,996 missing country/year pairs with the added condition of having a life expectancy greater than 0 in each data point. We believe both data cleaning steps should have minimal impact on analyzing greater trends.
+
+```{r}
+#| output: false
+expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  str()
+
+  expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  map_int(~ sum(is.na(.x))) |>
+  enframe(name = "var", value = "missing")
+```
+
+```{r}
+poverty <- poverty_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "poverty_rate") |>
+  filter(!is.na(poverty_rate)) |> # Gets rid of rows with no data
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}")), # Extract years
+         poverty_rate = poverty_rate/100) # Convert rates to range 0-1
+
+expectancy <- expectancy_unclean |>
+  pivot_longer(cols = "X1800":"X2100",
+               names_to = "year",
+               values_to = "life_expectancy") |>
+  filter(!is.na(life_expectancy) & life_expectancy > 0) |> # Get rid of rows with no data (and 0 seems extreme)
+  mutate(year = as.numeric(str_extract(year, pattern = "[:digit:]{4}"))) # Extract years
+
+```
+
+The rest of the data cleaning adapts the sets to be more workable, and the data Joining is done between the two datasets on country/year pairs with both poverty and life expectancy data.
+
+```{r}
+combined <- poverty |>
+  full_join(expectancy, join_by(country == country, year == year)) |>
+  drop_na()
+
+```
+
+**Hypothesis**
+
+Global modernization and advances in healthcare have contributed to increases in life expectancy in the modern era. These benefits are often unevenly distributed and tend to be concentrated among populations with higher socioeconomic status(Liu et al., 2024). In this study, we will analyze historical poverty rates and life expectancy data to examine if extreme poverty rates have a linear negative relationship with life expectancy rates.
+
+## Modeling the Relationship between extreme poverty rate and life expectancy at birth
+
+# Data Visualizations
+
+To explore the relationship between poverty rate and life expectancy, we start with a scatterplot of the average values for each country across all years. Each point represents a country, with notable outliers labeled. This plot highlights a general trend where countries with higher average poverty rates tend to have lower average life expectancy.The animated plot shows us how this relationship changes over time. We see that across time as poverty rate decreases, life expectency trends towards increasing.
+
+```{r}
+if (!exists("summarized")) {
+  summarized <- combined |>
+    group_by(country) |>
+    summarise(
+      avg_poverty_rate = mean(poverty_rate, na.rm = TRUE),
+      avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+    )
+}
+top_bottom <- summarized |>
+  arrange(avg_life_expectancy) |>
+  slice(c(1:5, (n() - 4):n()))
+
+ggplot(summarized, aes(x = avg_poverty_rate, y = avg_life_expectancy)) +
+  geom_point(color = "steelblue", alpha = 0.6, size = 2.5) +
+  geom_text(data = top_bottom, aes(label = country), hjust = 1.1, size = 3) +
+  labs(
+    title = "Country-Level Averages: Life Expectancy vs. Poverty Rate",
+    subtitle = "Top and bottom 5 countries by life expectancy labeled",
+    x = "Average Poverty Rate (Proportion)",
+    y = "Average Life Expectancy (Years)"
+  ) +
+  theme_minimal()
+
+
+```
+
+```{r, eval=interactive()}
+animated_plot <- ggplot(combined, aes(x = poverty_rate, y = life_expectancy)) +
+  geom_point(aes(color = country), alpha = 0.6, show.legend = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(
+    title = "Year: {frame_time}",
+    subtitle = "Tracking poverty vs. life expectancy over time",
+    x = "Poverty Rate (Proportion)",
+    y = "Life Expectancy (Years)"
+  ) +
+  transition_time(year) +
+  ease_aes('linear') +
+  theme_minimal()
+
+animate(animated_plot, renderer = gifski_renderer("poverty_vs_lifeexp.gif"),
+        width = 800, height = 500, fps = 10, duration = 10)
+```
+
+![](poverty_vs_lifeexp.gif)
+
+# Linear Regression
+
+Here we fit a linear regression model using the average poverty rate and life expectancy for each country across all years in the dataset (1800-2100). Each point is a single country in the scatterplot.
+
+```{r}
+
+summarized <- combined |>
+  group_by(country) |>
+  summarise(
+    avg_poverty_rate = mean(poverty_rate, na.rm = TRUE),
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)) 
+
+summarized |>
+  ggplot(aes(x = avg_poverty_rate, y = avg_life_expectancy)) +
+  geom_point() +
+  geom_smooth(method = "lm") |>
+  labs(x = "Average Poverty Rate Across all Years by Country",
+       y = "",
+       subtitle = "Life Expectancy (years)",
+       title = "Life Expectancy vs. Extreme Poverty Rate")
+
+```
+
+```{r}
+summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
+
+summarized_lm |>
+  tbl_regression(intercept = T) |>
+    kable(caption = "Coefficient 
+        values returned by the fitted 
+        linear regression model", 
+        col.names = c("Characteristic", 
+                      "Estimated Value", 
+                      "95% Confidence Interval", 
+                      "P Value")) |>
+  kable_styling(full_width = F,
+                html_font = "Cambria", 
+                bootstrap_options = "striped", 
+                position = "center")
+  
+```
+
+**Interpretation of Returned Coefficient Values**
+
+The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a country with a 0% poverty rate. While the estimated value for the average poverty rate characteristic is the expected average change in life expectancy for every 10% increase of poverty rate a country experiences.
+
+Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values for both characteristics being so incredibly low means that the results and relationships displayed by the linear model are *very* statistically relevant. This means that the predictions returned by the model are very reflective of the overall population and that the results returned are unlikely to be caused by any sampling errors. Likewise, the 95% confidence interval reported gives us a range in which 95% of samples would have average values for the given characteristics lying within that range.
+
+# Model Fit
+
+```{r}
+
+# variances
+response_variance <- var(summarized$avg_life_expectancy, na.rm = TRUE)  # A
+fitted_variance <- var(fitted(summarized_lm))                            # B
+residual_variance <- var(residuals(summarized_lm))
+r_squared_manual <- fitted_variance / response_variance 
+
+#table
+
+tibble(
+  `Measure` = c(
+    "Variance in response ",
+    "Variance in fitted values",
+    "Variance in residuals",
+    "R²"
+  ),
+  `Value` = c(
+    response_variance,
+    fitted_variance,
+    residual_variance,
+    r_squared_manual
+  )
+) |>
+  gt() |>
+  fmt_number(columns = "Value", decimals = 4) |>
+  tab_header(
+    title = "Model Variance Summary"
+  ) |>
+  cols_label(
+    Measure = "Descriptive Statistic",
+    Value = "Value"
+  )
+```
+
+**Interpretation of Model Variability**
+
+The model accounts for 61.88% of variability in average life expectancy for each country across all years in the dataset (1800-2100). This suggest that poverty rate is a strong indicator for life expectancy. The model seems to capture a large amount of variance but other variables or interactions may improve model accuracy.
