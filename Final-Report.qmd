@@ -261,3 +261,47 @@ tibble(
 **Interpretation of Model Variability**
 
 The model accounts for 61.88% of variability in average life expectancy for each country across all years in the dataset (1800-2100). This suggest that poverty rate is a strong indicator for life expectancy. The model seems to capture a large amount of variance but other variables or interactions may improve model accuracy.
+
+
+# Cross Validation
+
+Using k-fold cross validation, we will check the fit of our regression model
+
+```{r}
+set.seed(192)
+# n as amount of rows in data
+n <- nrow(summarized)
+# k such that each sample size is >=10
+k <- floor(n/10)
+
+# randomly partition into k folds (19 for our data)
+summarized <- summarized |>
+  mutate(fold = sample(rep_len(1:k, length.out = n),
+                       size = n))
+
+kfold <- function(data, fold_num) {
+  # Separate out data from this fold
+  fold_data <- data |>
+    filter(fold == fold_num)
+  # Use the rest of the data to train our model
+  training_data <- data |>
+    filter(fold != fold_num)
+  
+  # Fit our model using just the training data
+  train_lm <- lm(data = training_data, avg_life_expectancy ~ avg_poverty_rate)
+  
+  # Generate predictions for the separated fold data
+  fold_predictions <- predict(train_lm, newdata = fold_data)
+  
+  # Calculate R^2 for the separate fold data and return it
+  fold_r2 <- var(fold_predictions)/
+    var(fold_data$avg_life_expectancy)
+  return(fold_r2)
+  
+}
+
+# map the function to our folded data
+res <- map_dbl(1:k,
+               ~ kfold(summarized, .x))
+
+```
