@@ -33,7 +33,7 @@ Life expectancy varies drastically across nations and time. While life expectanc
 
 This report takes a look at the connection between the extent of extreme poverty in 190+ nations and their respective life expectancy, The report covers 300 years of data from 1800 to independently projected values up to the year 2100. The condition for falling under "Extreme poverty" is for populations with income \<\$2.15 a day (inflation adjusted).
 
-All data comes from two independent datasets (courtesy of Gapminder) that will be cleaned and joined together for analysis.
+All data comes from two independent datasets (courtesy of Gapminder) that will be cleaned and joined together for analysis. Our full code can be found at https://github.com/BLopez04/331GroupS
 
 The first dataset is the "Extreme poverty rate (\<\$2.15/day, Gapminder data) long series 1800 to 2100".
 
@@ -302,5 +302,27 @@ kfold <- function(data, fold_num) {
 # map the function to our folded data
 res <- map_dbl(1:k,
                ~ kfold(summarized, .x))
+
+```
+
+
+**Plotting these results**
+
+```{r}
+# plot R^2 for each fold
+barplot(
+  res,
+  names.arg = 1:length(res),
+  col = "skyblue",
+  main = "R² Values Across Folds (k-Fold Cross Validation)",
+  xlab = "Fold Number",
+  ylab = "R-squared Value",
+  ylim = c(0, max(res) + 0.05)
+)
+
+# draw average R^2 line
+abline(h = mean(res), col = "red", lty = 2, lwd = 2)
+
+
 
 ```
