@@ -264,7 +264,9 @@ The model accounts for 61.88% of variability in average life expectancy for each
 
 # Cross Validation
 
-Using k-fold cross validation, we will check the fit of our regression model
+We used a K-fold cross-validation to evaluate the fit of our regression model. A random seed was set to ensure that the data split is consistent each time the code is run, improving reproducibility. Based on the size of the dataset, we determined that using approximately 10 observations per fold was appropriate. Observations were then randomly assigned to one of the folds.
+
+A custom K-fold function was created to perform the cross-validation process. For each fold, the data was split into a training set and a test set. The training set was used to fit a linear regression model predicting average life expectancy based on poverty rate. This model was then applied to the test set, and an R2 was calculated to measure how well the model explained variation in the test fold. This process was repeated for each fold, providing an estimate of model performance across the entire dataset.
 
 ```{r}
 set.seed(192)
@@ -305,7 +307,6 @@ res <- map_dbl(1:k,
 
 ```
 
-
 **Plotting these results**
 
 ```{r}
@@ -326,3 +327,7 @@ abline(h = mean(res), col = "red", lty = 2, lwd = 2)
 
 
 ```
+
+# Conclusion
+
+This analysis supports the hypothesis that higher poverty rates are strongly associated with lower life expectancy across 190 countries from 1800 to 2100. The linear regression model explained 61.88% of the variation in life expectancy and identified poverty rate as a significant predictor, with a p-value less than 0.001. While the model fit this dataset well, the variability observed across folds in the k-fold cross-validation suggests that the model’s performance may fluctuate depending on the data subset. This indicates that incorporating additional variables could improve model accuracy and generalization to other datasets. Overall, the results highlight a clear and significant inverse relationship between poverty rate and life expectancy in this particular historical data examined.
