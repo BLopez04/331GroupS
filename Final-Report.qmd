@@ -262,7 +262,6 @@ tibble(
 
 The model accounts for 61.88% of variability in average life expectancy for each country across all years in the dataset (1800-2100). This suggest that poverty rate is a strong indicator for life expectancy. The model seems to capture a large amount of variance but other variables or interactions may improve model accuracy.
 
-
 # Cross Validation
 
 Using k-fold cross validation, we will check the fit of our regression model
@@ -303,5 +302,26 @@ kfold <- function(data, fold_num) {
 # map the function to our folded data
 res <- map_dbl(1:k,
                ~ kfold(summarized, .x))
+
+```
+
+**Plotting these results**
+
+```{r}
+# plot R^2 for each fold
+barplot(
+  res,
+  names.arg = 1:length(res),
+  col = "skyblue",
+  main = "R² Values Across Folds (k-Fold Cross Validation)",
+  xlab = "Fold Number",
+  ylab = "R-squared Value",
+  ylim = c(0, max(res) + 0.05)
+)
+
+# draw average R^2 line
+abline(h = mean(res), col = "red", lty = 2, lwd = 2)
+
+
 
 ```
