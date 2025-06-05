@@ -262,7 +262,6 @@ tibble(
 
 The model accounts for 61.88% of variability in average life expectancy for each country across all years in the dataset (1800-2100). This suggest that poverty rate is a strong indicator for life expectancy. The model seems to capture a large amount of variance but other variables or interactions may improve model accuracy.
 
-
 # Cross Validation
 
 Using k-fold cross validation, we will check the fit of our regression model
