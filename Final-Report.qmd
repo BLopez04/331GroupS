@@ -200,7 +200,7 @@ summarized |>
 summarized_lm <- lm(data = summarized, avg_life_expectancy ~ avg_poverty_rate)
 
 summarized_lm |>
-  tbl_regression(intercept = T) |>
+  tbl_regression(intercept = T, label = list(avg_poverty_rate = "Average Poverty Rate")) |>
     kable(caption = "Coefficient 
         values returned by the fitted 
         linear regression model", 
@@ -219,7 +219,7 @@ summarized_lm |>
 
 The table above shows both the estimated y-intercept and the slope for the average poverty rate line modeled in the scatter plot above. The estimated intercept is the average estimated life expectancy of a country with a 0% poverty rate. While the estimated value for the average poverty rate characteristic is the expected average change in life expectancy for every 10% increase of poverty rate a country experiences.
 
-Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values for both characteristics being so incredibly low means that the results and relationships displayed by the linear model are *very* statistically relevant. This means that the predictions returned by the model are very reflective of the overall population and that the results returned are unlikely to be caused by any sampling errors. Likewise, the 95% confidence interval reported gives us a range in which 95% of samples would have average values for the given characteristics lying within that range.
+Alongside these values, both the P-value and 95% confidence intervals are reported. The reported P-values for both characteristics being so incredibly low means that the results and relationships displayed by the linear model are *very* statistically relevant. This means that the predictions returned by the model are unlikely to be caused by any sampling errors or random chance. Likewise, the 95% confidence interval reported gives us a range in which 95% of samples would have average values for the given characteristics lying within that range.
 
 # Model Fit
 
