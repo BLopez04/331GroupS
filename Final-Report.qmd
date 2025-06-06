@@ -322,6 +322,8 @@ barplot(
 # draw average R^2 line
 abline(h = mean(res), col = "red", lty = 2, lwd = 2)
 
-
-
 ```
+
+**Interpretation of k-fold Cross Validation R^2 Values**
+
+The average R^2^ value for our K-fold cross validation was `{r} mean(res)` meanwhile, the R^2^ value for our 
