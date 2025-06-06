@@ -163,12 +163,12 @@ animated_plot <- ggplot(combined, aes(x = poverty_rate, y = life_expectancy)) +
     x = "Poverty Rate (Proportion)",
     y = "Life Expectancy (Years)"
   ) +
-  transition_time(year) +
+  transition_time(as.integer(year)) +
   ease_aes('linear') +
   theme_minimal()
 
 animate(animated_plot, renderer = gifski_renderer("poverty_vs_lifeexp.gif"),
-        width = 800, height = 500, fps = 10, duration = 10)
+        width = 800, height = 500,  fps = 5, duration = 10)
 ```
 
 ![](poverty_vs_lifeexp.gif)
