@@ -326,22 +326,16 @@ abline(h = mean(res), col = "red", lty = 2, lwd = 2)
 
 ```
 
-**Interpretation of k-fold Cross Validation R^2 Values**
+**Interpretation of k-fold Cross Validation R\^2 Values**
 
-The average R^2^ value for our K-fold cross validation was `{r} mean(res)` meanwhile, the R^2^ value for our fitted model was `{r} r_squared_manual`. This may suggest that the linear regression model is underfitting. This may also be indicative of the difference in how the R^2^ values were calculated for both our fitted model and the k-fold cross validation. In our implementation of the K-fold algorithm that we used, the equation to calculate R^2^ values allowed for values over 1, which is outside the typical range of [0,1] for R^2^ values. This may have resulted in the average R^2^ value for our k-fold cross validation to be higher than it should be, as is indicated by the far higher R^2^ values for some folds rather than others. Fold variance mostly seems to been around the aveerage value, with some notable outliers such as folds 1, 2, 5, 6, 10, 11, 17, and 18.
+The average R^2^ value for our K-fold cross validation was `{r} mean(res)` meanwhile, the R^2^ value for our fitted model was `{r} r_squared_manual`. This may suggest that the linear regression model is underfitting. This may also be indicative of the difference in how the R^2^ values were calculated for both our fitted model and the k-fold cross validation. In our implementation of the K-fold algorithm that we used, the equation to calculate R^2^ values allowed for values over 1, which is outside the typical range of \[0,1\] for R^2^ values. This may have resulted in the average R^2^ value for our k-fold cross validation to be higher than it should be, as is indicated by the far higher R^2^ values for some folds rather than others. Fold variance mostly seems to been around the aveerage value, with some notable outliers such as folds 1, 2, 5, 6, 10, 11, 17, and 18.
 
-The predictiveness of our model seems to suffice for our dataset which is primarily focused on poverty's relation to lifespan. This is based on the fact that an article found in the Scholastica academic journal stated that, "The field of finance has a much larger range with “good” R2 values ranging from 0.40 to 0.70, depending on the nature of the analysis and data availability" (Gupta et al. 2024). As poverty is based on a myriad of financial and sociological factors, an R^2^ value of ~0.6 seems to be indicative of good predictiveness for our model.
-
-
-
+The predictiveness of our model seems to suffice for our dataset which is primarily focused on poverty's relation to lifespan. This is based on the fact that an article found in the Scholastica academic journal stated that, "The field of finance has a much larger range with “good” R2 values ranging from 0.40 to 0.70, depending on the nature of the analysis and data availability" (Gupta et al. 2024). As poverty is based on a myriad of financial and sociological factors, an R^2^ value of \~0.6 seems to be indicative of good predictiveness for our model.
 
 # Conclusion
 
 This analysis supports the hypothesis that higher poverty rates are strongly associated with lower life expectancy across 190 countries from 1800 to 2100. The linear regression model explained 61.88% of the variation in life expectancy and identified poverty rate as a significant predictor, with a p-value less than 0.001. While the model fit this dataset well, the variability observed across folds in the k-fold cross-validation suggests that the model’s performance may fluctuate depending on the data subset. This indicates that incorporating additional variables could improve model accuracy and generalization to other datasets. Overall, the results highlight a clear and significant inverse relationship between poverty rate and life expectancy in this particular historical data examined.
 
-
 # References
 
 Gupta, Avi, et al. “Determining a Meaningful R-Squared Value in Clinical Medicine.” Academic Medicine & Surgery, 27 Oct. 2024, academic-med-surg.scholasticahq.com/article/125154-determining-a-meaningful-r-squared-value-in-clinical-medicine, https://doi.org/10.62186/001c.125154.
-
-
